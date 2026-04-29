@@ -1,11 +1,10 @@
 package com.example.gorido.Model;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "type_has_brand")
-public class TypeHasBrand {
+@Table(name = "type_has_passengers")
+public class TypeHasPassenger {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -15,10 +14,10 @@ public class TypeHasBrand {
     private VehicleType vehicleType;
 
     @ManyToOne
-    @JoinColumn(name = "vehicle_brand_id")
-    private VehicleBrand vehicleBrand;
+    @JoinColumn(name = "passengers_id")
+    private Passengers passengersId;
 
-    public TypeHasBrand() {}
+    public TypeHasPassenger() {}
 
     public void setId(int id) {
         this.id = id;
@@ -36,11 +35,11 @@ public class TypeHasBrand {
         return vehicleType;
     }
 
-    public void setVehicleBrand(VehicleBrand vehicleBrand) {
-        this.vehicleBrand = vehicleBrand;
+    public void setPassengersId(Passengers passengersId) {
+        this.passengersId = passengersId;
     }
 
-    public VehicleBrand getVehicleBrand() {
-        return vehicleBrand;
+    public Passengers getPassengersId() {
+        return passengersId;
     }
 }

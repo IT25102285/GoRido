@@ -2,14 +2,14 @@ package com.example.gorido.Model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "vehicle_type")
-public class VehicleType {
+@Table(name = "district")
+public class District {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
 
-    public VehicleType() {}
+    public District() {}
 
     public void setId(int id) {
         this.id = id;

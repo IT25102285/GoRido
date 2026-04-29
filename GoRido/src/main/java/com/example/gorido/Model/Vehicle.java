@@ -1,5 +1,8 @@
 package com.example.gorido.Model;
 import jakarta.persistence.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -11,8 +14,9 @@ public class Vehicle {
     private String model;
     private String number;
     private String insurance_number;
-    private Date insurance_exp_date;
+    private LocalDate insurance_exp_date;
     private String vehicle_photo;
+    private String vehicle_book;
     private String insurance_photo;
 
     @ManyToOne
@@ -24,14 +28,18 @@ public class Vehicle {
     private Status statusId;
 
     @ManyToOne
-    @JoinColumn(name = "vehicle_type_id")
-    private VehicleType vehicleType;
+    @JoinColumn(name = "type_has_brand_id")
+    private TypeHasBrand typeHasBrand;
+
+    @ManyToOne
+    @JoinColumn(name = "type_has_passengers_id")
+    private TypeHasPassenger typeHasPassenger;
 
     @ManyToOne
     @JoinColumn(name = "vehicle_color_id")
     private VehicleColor vehicleColor;
 
-    public Vehicle () {}
+    public Vehicle() {}
 
     public void setId(int id) {
         this.id = id;
@@ -65,11 +73,11 @@ public class Vehicle {
         return insurance_number;
     }
 
-    public void setInsurance_exp_date(Date insurance_exp_date) {
+    public void setInsurance_exp_date(LocalDate insurance_exp_date) {
         this.insurance_exp_date = insurance_exp_date;
     }
 
-    public Date getInsurance_exp_date() {
+    public LocalDate getInsurance_exp_date() {
         return insurance_exp_date;
     }
 
@@ -89,6 +97,14 @@ public class Vehicle {
         return insurance_photo;
     }
 
+    public void setVehicle_book(String vehicle_book) {
+        this.vehicle_book = vehicle_book;
+    }
+
+    public String getVehicle_book() {
+        return vehicle_book;
+    }
+
     public void setDriverId(Driver driverId) {
         this.driverId = driverId;
     }
@@ -105,12 +121,20 @@ public class Vehicle {
         return statusId;
     }
 
-    public void setVehicleType(VehicleType vehicleType) {
-        this.vehicleType = vehicleType;
+    public void setVehicleTypeHasBrand(TypeHasBrand typeHasBrand) {
+        this.typeHasBrand = typeHasBrand;
     }
 
-    public VehicleType getVehicleType() {
-        return vehicleType;
+    public TypeHasBrand getVehicleTypeHasBrand() {
+        return typeHasBrand;
+    }
+
+    public void setTypeHasPassenger(TypeHasPassenger typeHasPassenger) {
+        this.typeHasPassenger = typeHasPassenger;
+    }
+
+    public TypeHasPassenger getTypeHasPassenger() {
+        return typeHasPassenger;
     }
 
     public void setVehicleColor(VehicleColor vehicleColor) {

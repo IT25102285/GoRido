@@ -1,15 +1,15 @@
 package com.example.gorido.Service.Impl;
 
+import com.example.gorido.Model.User;
 import com.example.gorido.Model.*;
-import com.example.gorido.Repository.GenderRepository;
-import com.example.gorido.Repository.StatusRepository;
-import com.example.gorido.Repository.TypeRepository;
-import com.example.gorido.Repository.UserRepository;
+import com.example.gorido.Repository.*;
 import com.example.gorido.Service.UserService;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
+import java.io.File;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -22,16 +22,20 @@ public class UserServiceImpl implements UserService {
     private final TypeRepository typeRepository;
     private final GenderRepository genderRepository;
     private final EmailService emailService;
+    private final DriverRepository driverRepository;
+    private final VehicleRepository vehicleRepository;
 
     public UserServiceImpl(UserRepository userRepository,
-                       StatusRepository statusRepository,
-                       TypeRepository typeRepository,
-                       GenderRepository genderRepository, EmailService emailService) {
+                           StatusRepository statusRepository,
+                           TypeRepository typeRepository,
+                           GenderRepository genderRepository, EmailService emailService, DriverRepository driverRepository, VehicleRepository vehicleRepository) {
         this.userRepository = userRepository;
         this.statusRepository = statusRepository;
         this.typeRepository = typeRepository;
         this.genderRepository = genderRepository;
         this.emailService = emailService;
+        this.driverRepository = driverRepository;
+        this.vehicleRepository = vehicleRepository;
     }
 
     public String getAllGenders() {
@@ -111,7 +115,7 @@ public class UserServiceImpl implements UserService {
         user.setTypeId(userType.get());
         user.setStatusId(status.get());
         user.setGender_id(gender.get());
-        user.setJoined_date(LocalDateTime.now());
+        user.setJoined_date(LocalDate.now());
         userRepository.save(user);
 
         return "success";
@@ -170,6 +174,109 @@ public class UserServiceImpl implements UserService {
         user.setPassword(newPassword);
         userRepository.save(user);
 
+        return "success";
+    }
+
+    public String profile(Model model, HttpSession session) {
+
+        String email = (String) session.getAttribute("userEmail");
+
+        if (email == null) {
+            return "redirect:/login";
+        }
+
+        User user = userRepository.findByEmail(email).orElse(null);
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("user", user);
+
+        return "userprofile";
+    }
+
+    public String saveNewPassword(String email, String oldPassword, String newPassword){
+        User user = userRepository.findByEmail(email).orElse(null);
+
+        if (user == null) return "User not found";
+
+        if (!user.getPassword().equals(oldPassword)) {
+            return "Invalid password, Try again";
+        }
+
+        user.setPassword(newPassword);
+        userRepository.save(user);
+
+        return "success";
+    }
+
+    public String updateUser(String first_name, String last_name, String email, String mobile_number, HttpSession session){
+        int id = (Integer) session.getAttribute("userId");
+        String oldEmail = (String) session.getAttribute("userEmail");
+
+        User user = userRepository.findByEmail(oldEmail).orElse(null);
+        if (user == null) return "User not found";
+
+        Optional<User> activeUser = userRepository.findByEmailAndStatusId_Id(email, 1);
+        if (activeUser.isPresent() && activeUser.get().getId() != id) {
+            return "Email already in use";
+        }
+
+        user.setFirst_name(first_name);
+        user.setLast_name(last_name);
+        user.setEmail(email);
+        user.setMobile_number(mobile_number);
+        userRepository.save(user);
+
+        session.setAttribute("userEmail", user.getEmail());
+        return "success";
+    }
+
+    public String deleteUser(HttpSession session) {
+
+        String email = (String) session.getAttribute("userEmail");
+        if (email == null) return "Session expired";
+
+        User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) return "User not found";
+
+        Driver driver = user.getDriver();
+
+        if (driver != null) {
+
+            deleteFile(driver.getNic_image(), "driver/personal/nic");
+            deleteFile(driver.getLicense_image(), "driver/personal/license");
+
+            for (Vehicle v : driver.getVehicles()) {
+                deleteFile(v.getInsurance_photo(), "driver/vehicle/isuarance");
+                deleteFile(v.getVehicle_book(), "driver/vehicle/book");
+                deleteFile(v.getVehicle_photo(), "driver/vehicle/vehicle_images");
+            }
+        }
+
+        userRepository.delete(user);
+
+        session.invalidate();
+
+        return "success";
+    }
+
+    private void deleteFile(String fileName, String folder) {
+
+        if (fileName == null) return;
+
+        String basePath = "J:/New folder/GoRido/images/";
+
+        File file = new File(basePath + folder + "/" + fileName);
+
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
+    public String logoutUser(HttpSession session){
+        session.invalidate();
         return "success";
     }
 }

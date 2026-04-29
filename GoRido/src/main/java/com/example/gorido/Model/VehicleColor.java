@@ -11,7 +11,7 @@ public class VehicleColor {
     private int id;
     private String name;
 
-    public VehicleColor () {}
+    public VehicleColor() {}
 
     public void setId(int id) {
         this.id = id;

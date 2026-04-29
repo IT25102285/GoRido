@@ -2,6 +2,7 @@ package com.example.gorido.Model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,7 +16,7 @@ public class User {
     private String last_name;
     private String mobile_number;
     private String password;
-    private LocalDateTime joined_date;
+    private LocalDate joined_date;
     @Column(name = "verification_code")
     private String verificationCode;
 
@@ -64,8 +65,8 @@ public class User {
     public void setPassword(String password) {this.password = password;}
     public String getPassword() {return password;}
 
-    public void setJoined_date(LocalDateTime joined_date) {this.joined_date = joined_date;}
-    public LocalDateTime getJoined_date() {return joined_date;}
+    public void setJoined_date(LocalDate joined_date) {this.joined_date = joined_date;}
+    public LocalDate getJoined_date() {return joined_date;}
 
     public void setStatusId(Status statusId) {
         this.statusId = statusId;
@@ -88,5 +89,12 @@ public class User {
 
     public void setTypeId(Type type_id) {
         this.type_id = type_id;
+    }
+
+    @OneToOne(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Driver driver;
+
+    public Driver getDriver() {
+        return driver;
     }
 }

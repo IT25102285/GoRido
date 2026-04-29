@@ -11,7 +11,7 @@ public class VehicleBrand {
     private int id;
     private String name;
 
-    public VehicleBrand () {}
+    public VehicleBrand() {}
 
     public void setId(int id) {
         this.id = id;
