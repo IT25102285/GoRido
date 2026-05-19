@@ -32,10 +32,6 @@ public class Vehicle {
     private TypeHasBrand typeHasBrand;
 
     @ManyToOne
-    @JoinColumn(name = "type_has_passengers_id")
-    private TypeHasPassenger typeHasPassenger;
-
-    @ManyToOne
     @JoinColumn(name = "vehicle_color_id")
     private VehicleColor vehicleColor;
 
@@ -121,20 +117,12 @@ public class Vehicle {
         return statusId;
     }
 
-    public void setVehicleTypeHasBrand(TypeHasBrand typeHasBrand) {
+    public void setTypeHasBrand(TypeHasBrand typeHasBrand) {
         this.typeHasBrand = typeHasBrand;
     }
 
-    public TypeHasBrand getVehicleTypeHasBrand() {
+    public TypeHasBrand getTypeHasBrand() {
         return typeHasBrand;
-    }
-
-    public void setTypeHasPassenger(TypeHasPassenger typeHasPassenger) {
-        this.typeHasPassenger = typeHasPassenger;
-    }
-
-    public TypeHasPassenger getTypeHasPassenger() {
-        return typeHasPassenger;
     }
 
     public void setVehicleColor(VehicleColor vehicleColor) {

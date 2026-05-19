@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "driver")
-public class Driver {
+public class Driver{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -29,10 +29,6 @@ public class Driver {
     @ManyToOne
     @JoinColumn(name = "status_id")
     private Status statusId;
-
-    @ManyToOne
-    @JoinColumn(name = "active_id")
-    private Active activeId;
 
     @ManyToOne
     @JoinColumn(name = "district_id")
@@ -118,14 +114,6 @@ public class Driver {
         return statusId;
     }
 
-    public void setActiveId(Active activeId) {
-        this.activeId = activeId;
-    }
-
-    public Active getActiveId() {
-        return activeId;
-    }
-
     public void setDistrict(District district) {
         this.district = district;
     }
@@ -136,6 +124,10 @@ public class Driver {
 
     @OneToMany(mappedBy = "driverId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Vehicle> vehicles;
+
+    public void setVehicles(List<Vehicle> vehicles) {
+        this.vehicles = vehicles;
+    }
 
     public List<Vehicle> getVehicles() {
         return vehicles;

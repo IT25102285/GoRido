@@ -1,17 +1,14 @@
 package com.example.gorido.Model;
+
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "vehicle_type")
-public class VehicleType {
+@Table(name = "hire_status")
+public class HireStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
-    @Column(name = "fare")
-    private double pricePerKm;
-
-    public VehicleType() {}
 
     public void setId(int id) {
         this.id = id;
@@ -27,13 +24,5 @@ public class VehicleType {
 
     public String getName() {
         return name;
-    }
-
-    public void setPricePerKm(double pricePerKm) {
-        this.pricePerKm = pricePerKm;
-    }
-
-    public double getPricePerKm() {
-        return pricePerKm;
     }
 }

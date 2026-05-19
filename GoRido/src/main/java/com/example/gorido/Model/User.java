@@ -94,6 +94,10 @@ public class User {
     @OneToOne(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
     private Driver driver;
 
+    public void setDriver(Driver driver) {
+        this.driver = driver;
+    }
+
     public Driver getDriver() {
         return driver;
     }
