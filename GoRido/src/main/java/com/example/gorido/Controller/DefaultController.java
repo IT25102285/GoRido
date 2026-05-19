@@ -1,8 +1,13 @@
 package com.example.gorido.Controller;
+import com.example.gorido.Model.Driver;
 import com.example.gorido.Model.User;
+import com.example.gorido.Repository.DriverRepository;
 import com.example.gorido.Repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
@@ -13,30 +18,44 @@ public class DefaultController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping("/driver/redirect")
-    public String redirectDriver(HttpSession session) {
+    //Profile Selection
+    @GetMapping("/profile")
+    public String profileRedirect(HttpSession session, Model model) {
 
         String email = (String) session.getAttribute("userEmail");
 
         if (email == null) {
-            return "redirect:/login";
+            return "redirect:/signin";
         }
 
         User user = userRepository.findByEmail(email).orElse(null);
 
         if (user == null) {
-            return "redirect:/login";
+            return "redirect:/signin";
         }
 
-        int typeId = user.getTypeId().getId();
+        int type = user.getTypeId().getId();
 
-        if (typeId == 1) {
-            return "redirect:/driverregi";
-        }
-        else if (typeId == 2) {
-            return "redirect:/driver/profile";
+        if (type == 1) {
+            return "redirect:/userprofile";
         }
 
-        return "redirect:/userprofile";
+        if (type == 2) {
+            return "redirect:/driverprofile";
+        }
+
+        return "redirect:/signin";
+    }
+
+    @GetMapping("/home")
+    public String home(Model model, HttpSession session){
+        String email = (String) session.getAttribute("userEmail");
+
+        if (email == null) {
+            return "redirect:/signin";
+        }
+
+        model.addAttribute("activePage", "home");
+        return "home";
     }
 }
