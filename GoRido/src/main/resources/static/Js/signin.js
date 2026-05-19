@@ -56,7 +56,7 @@ function signin(event){
                 msg.innerHTML = response;
             }else{
                 msg.classList.add("hidden");
-                window.location.href = "/userprofile";
+                window.location.href = "/home";
             }
         }
     };

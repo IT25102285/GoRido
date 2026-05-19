@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+            rel="stylesheet">
+    <script>
+        tailwind.config = {
+          darkMode: 'class'
+        }
+    </script>
+    <title>GoRido Sign In</title>
+    <style>
+        .signImage {
+          background-image: url("/loginImage.jpg");
+          height: 100%;
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+        }
+    </style>
+</head>
+
+<body
+        class="min-h-screen bg-zinc-100 dark:bg-zinc-950 flex items-center justify-center px-4 py-10 transition-all duration-300">
+
+<!-- Main Container -->
+<div
+        class="w-full max-w-6xl bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl overflow-hidden grid md:grid-cols-2">
+
+    <!-- LEFT SIDE -->
+    <div
+            class="hidden md:flex flex-col justify-between p-10 relative overflow-hidden
+            bg-zinc-900 text-white">
+
+        <!-- Background Effects -->
+        <div
+                class="absolute top-0 right-0 w-72 h-72 bg-orange-500/10 rounded-full blur-3xl"></div>
+        <div
+                class="absolute bottom-0 left-0 w-72 h-72 bg-yellow-500/10 rounded-full blur-3xl"></div>
+
+        <div class="relative z-10">
+
+            <!-- Logo -->
+            <div class="flex items-center gap-4 mb-12">
+
+                <div
+                        class="w-16 h-16 rounded-2xl bg-yellow-500 flex items-center justify-center shadow-lg">
+                    <i class="ti ti-car text-3xl text-white"></i>
+                </div>
+
+                <div>
+                    <h1 class="text-4xl font-bold tracking-wide">
+                        GoRido
+                    </h1>
+
+                    <p class="text-zinc-400 mt-1">
+                        Smart Taxi Booking Platform
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Ride Card -->
+            <div
+                    class="bg-white/5 border border-white/10 backdrop-blur-xl rounded-3xl p-8">
+
+                <p
+                        class="uppercase text-xs tracking-[4px] text-orange-400 mb-8">
+                    Ride Summary
+                </p>
+
+                <div class="space-y-5">
+
+                    <div class="flex items-center justify-between">
+                        <span class="text-zinc-400">Base Fare</span>
+                        <span class="font-semibold text-lg" th:text="'LKR ' + ${#numbers.formatDecimal(hire.base_fare, 1, 2)}"></span>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <span class="text-zinc-400">Service Fee</span>
+                        <span class="font-semibold text-lg">LKR
+                                    70.00</span>
+                    </div>
+
+                    <div
+                            class="border-t border-white/10 pt-5 flex items-center justify-between">
+
+                                <span class="text-xl font-semibold">
+                                    Total
+                                </span>
+
+                        <span
+                                class="text-3xl font-bold text-orange-400" th:text="'LKR ' + ${#numbers.formatDecimal(hire.total_fare, 1, 2)}">
+                                </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Bottom -->
+        <div class="relative z-10 mt-10">
+
+            <div class="flex items-center gap-3 text-zinc-400 text-sm">
+
+                <p>
+                    Secure encrypted payments with protected
+                    transactions
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="p-8 lg:p-10">
+
+        <div class="mb-8">
+            <h2
+                    class="text-3xl font-bold text-zinc-800 dark:text-white">
+                Payment Method
+            </h2>
+
+            <p class="text-zinc-500 dark:text-zinc-400 mt-2">
+                Choose how you want to complete your ride payment.
+            </p>
+        </div>
+
+        <!-- CASH BUTTON -->
+        <button onclick="payCash(this)"
+                th:data-hire-id="${hire.id}"
+                th:data-total-fare="${hire.total_fare}"
+                class="w-full flex items-center justify-center gap-3 rounded-2xl bg-green-500 hover:bg-green-600 text-white py-4 font-semibold text-lg shadow-lg">
+
+            <i class="ti ti-cash text-2xl"></i>
+            Pay with Cash
+        </button>
+
+        <!-- DIVIDER -->
+        <div class="flex items-center gap-4 my-8">
+            <div
+                    class="h-px flex-1 bg-zinc-200 dark:bg-zinc-700"></div>
+            <span class="text-zinc-400 text-sm">OR</span>
+            <div
+                    class="h-px flex-1 bg-zinc-200 dark:bg-zinc-700"></div>
+        </div>
+
+        <!-- ONLINE PAYMENT BUTTON -->
+        <button id="cardToggleBtn"
+                onclick="toggleCard()"
+                class="w-full flex items-center justify-center gap-3 rounded-2xl bg-zinc-900 hover:bg-black dark:bg-white dark:hover:bg-zinc-200 dark:text-black text-white py-4 font-semibold text-lg shadow-lg">
+
+            <i class="ti ti-credit-card text-2xl"></i>
+            Pay Online
+        </button>
+
+        <!-- CARD FORM -->
+        <div id="cardSection"
+             class="hidden mt-8 border border-zinc-200 dark:border-zinc-700 rounded-3xl p-6 bg-zinc-50 dark:bg-zinc-800/50">
+
+            <!-- CARD TYPES -->
+            <div class="flex gap-3 mb-6">
+
+                <div
+                        class="px-4 py-2 rounded-xl bg-blue-600 text-white font-semibold text-sm">
+                    VISA
+                </div>
+
+                <div
+                        class="px-4 py-2 rounded-xl bg-red-500 text-white font-semibold text-sm">
+                    MC
+                </div>
+
+                <div
+                        class="px-4 py-2 rounded-xl bg-zinc-800 text-white font-semibold text-sm">
+                    AMEX
+                </div>
+
+            </div>
+
+            <!-- NAME -->
+            <div class="mb-5">
+
+                <label
+                        class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                    Cardholder Name
+                </label>
+
+                <input type="text"
+                       id="cardName"
+                       placeholder="Name on card"
+                       class="w-full rounded-2xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-4 outline-none focus:ring-4 focus:ring-orange-300 dark:text-white transition-all">
+
+            </div>
+
+            <!-- CARD NUMBER -->
+            <div class="mb-5">
+
+                <label
+                        class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                    Card Number
+                </label>
+
+                <input type="text"
+                       id="cardNum"
+                       maxlength="19"
+                       oninput="formatCard(this)"
+                       placeholder="1234 5678 9012 3456"
+                       class="w-full rounded-2xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-4 outline-none focus:ring-4 focus:ring-orange-300 dark:text-white transition-all">
+
+            </div>
+
+            <!-- EXPIRY + CVV -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+
+                <div>
+                    <label
+                            class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                        Expiry
+                    </label>
+
+                    <input type="text"
+                           id="expiry"
+                           maxlength="7"
+                           oninput="formatExpiry(this)"
+                           placeholder="MM / YY"
+                           class="w-full rounded-2xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-4 outline-none focus:ring-4 focus:ring-orange-300 dark:text-white transition-all">
+                </div>
+
+                <div>
+                    <label
+                            class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                        CVV
+                    </label>
+
+                    <input type="text"
+                           id="cvv"
+                           maxlength="4"
+                           placeholder="•••"
+                           class="w-full rounded-2xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-4 outline-none focus:ring-4 focus:ring-orange-300 dark:text-white transition-all">
+                </div>
+
+            </div>
+
+            <p id="modelmsg"class="text-sm text-center hidden mt-3 text-red-600"></p>
+
+            <!-- SUBMIT -->
+            <button onclick="submitCard(this)"
+                    th:data-hire-id="${hire.id}"
+                    th:data-total-fare="${hire.total_fare}"
+                    class="w-full py-4 rounded-2xl bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-lg shadow-xl flex items-center justify-center gap-3">
+
+                <i class="ti ti-lock"></i>
+                Pay LKR <span th:text="${hire.total_fare}"></span>
+            </button>
+
+        </div>
+
+        <!-- STATUS MESSAGE -->
+        <div id="statusMsg"
+             class="hidden mt-6 rounded-2xl px-5 py-4 text-sm font-medium">
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    function toggleCard() {
+
+        const sec = document.getElementById('cardSection');
+        const btn = document.getElementById('cardToggleBtn');
+        const msg = document.getElementById('statusMsg');
+
+        msg.className = 'hidden';
+
+        sec.classList.toggle('hidden');
+
+        btn.classList.toggle('ring-4');
+        btn.classList.toggle('ring-orange-300');
+    }
+
+    function formatCard(el) {
+
+        let v = el.value.replace(/\D/g, '').substring(0, 16);
+
+        el.value = v.replace(/(.{4})/g, '$1 ').trim();
+    }
+
+    function formatExpiry(el) {
+
+        let v = el.value.replace(/\D/g, '').substring(0, 4);
+
+        if (v.length >= 3) {
+            v = v.slice(0, 2) + ' / ' + v.slice(2);
+        }
+
+        el.value = v;
+    }
+
+    function submitCard() {
+
+        const name = document.getElementById('cardName').value.trim();
+        const num = document.getElementById('cardNum').value.replace(/\s/g, '');
+        const exp = document.getElementById('expiry').value.trim();
+        const cvv = document.getElementById('cvv').value.trim();
+
+        const msg = document.getElementById('statusMsg');
+
+        if (!name || num.length < 16 || exp.length < 7 || cvv.length < 3) {
+
+            msg.className =
+                'mt-6 rounded-2xl px-5 py-4 text-sm font-medium bg-red-100 text-red-700 block';
+
+            msg.innerHTML =
+                'Please fill in all card details correctly.';
+
+            return;
+        }
+
+        msg.className =
+            'mt-6 rounded-2xl px-5 py-4 text-sm font-medium bg-green-100 text-green-700 block';
+
+        msg.innerHTML =
+            '✓ Payment of LKR 560.00 processed successfully!';
+
+        document.getElementById('cardSection').classList.add('hidden');
+    }
+
+</script>
+<script src="/Js/payment.js"></script>
+</body>
+</html>

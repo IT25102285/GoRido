@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Invoice - GoRido</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    @media print {
+        .no-print {
+            display: none;
+        }
+    }
+@media print {
+
+.no-print {
+    display: none !important;
+}
+
+body {
+    background: white !important;
+}
+
+.shadow-xl {
+    box-shadow: none !important;
+}
+}
+  </style>
+</head>
+
+<body class="bg-slate-100 p-10">
+
+<!-- INVOICE CONTAINER -->
+<div class="max-w-3xl mx-auto bg-white rounded-3xl shadow-xl p-10">
+
+  <!-- HEADER -->
+  <div class="flex justify-between items-start border-b pb-6">
+
+    <div>
+      <h1 class="text-3xl font-bold text-slate-900">GoRido
+        Invoice</h1>
+      <p class="text-sm text-slate-500">Thank you for choosing Us</p>
+    </div>
+
+    <div class="text-right">
+      <p class="text-sm text-slate-500">Invoice No</p>
+      <h2 class="text-xl font-bold text-orange-500"
+          th:text="'#INV-' + ${hire.id}"></h2>
+    </div>
+
+  </div>
+
+  <!-- CUSTOMER + DATE -->
+  <div class="flex justify-between mt-6 text-sm text-slate-600">
+
+    <div>
+      <p class="font-semibold text-slate-800">Customer</p>
+      <p><span th:text="${hire.user.first_name}"></span> <span th:text="${hire.user.last_name}"></span></p>
+    </div>
+
+    <div class="text-right">
+      <p class="font-semibold text-slate-800">Date</p>
+      <p
+              th:text="${#dates.format(hire.payment.paidAt, 'yyyy-MM-dd HH:mm')}"></p>
+    </div>
+
+  </div>
+
+  <!-- DETAILS -->
+  <div class="mt-8">
+
+    <div class="grid grid-cols-2 gap-4 text-sm">
+
+      <div class="p-4 bg-slate-50 rounded-2xl">
+        <p class="text-slate-500">Pickup</p>
+        <p class="font-semibold"
+           th:text="${hire.pickup_location}"></p>
+      </div>
+
+      <div class="p-4 bg-slate-50 rounded-2xl">
+        <p class="text-slate-500">Destination</p>
+        <p class="font-semibold"
+           th:text="${hire.drop_location}"></p>
+      </div>
+
+      <div class="p-4 bg-slate-50 rounded-2xl">
+        <p class="text-slate-500">Distance</p>
+        <p class="font-semibold"
+           th:text="${hire.distance + ' KM'}"></p>
+      </div>
+
+      <div class="p-4 bg-slate-50 rounded-2xl">
+        <p class="text-slate-500">Vehicle Type</p>
+        <p class="font-semibold"
+           th:text="${hire.vehicleType.name}"></p>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- PAYMENT BREAKDOWN -->
+  <div class="mt-8 border-t pt-6">
+
+    <h3 class="text-lg font-bold mb-4">Payment Summary</h3>
+
+    <div class="space-y-3 text-sm">
+
+      <div class="flex justify-between">
+        <span>Base Fare</span>
+        <span th:text="'LKR ' + ${hire.base_fare}"></span>
+      </div>
+
+      <div class="flex justify-between">
+        <span>Service Charge</span>
+        <span>LKR 70.00</span>
+      </div>
+
+      <div
+              class="flex justify-between text-lg font-bold border-t pt-3">
+        <span>Total</span>
+        <span class="text-orange-500"
+              th:text="'LKR ' + ${hire.total_fare}"></span>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- PAYMENT STATUS -->
+  <div
+          class="mt-8 p-4 rounded-2xl bg-green-50 border border-green-200">
+
+    <p class="text-green-700 font-semibold">
+      ✓ Payment Completed Successfully (Card Payment)
+    </p>
+
+  </div>
+
+  <!-- BUTTONS -->
+  <div class="mt-8 flex gap-4 no-print">
+
+    <button onclick="window.print()"
+            class="flex-1 bg-yellow-500 text-white py-3 rounded-2xl font-semibold hover:bg-yellow-600 no-print">
+
+      Download / Print Invoice
+    </button>
+
+    <a href="/myBookings"
+       class="flex-1 text-center bg-slate-900 text-white py-3 rounded-2xl font-semibold no-print">
+
+      Back
+    </a>
+
+  </div>
+
+</div>
+
+</body>
+</html>

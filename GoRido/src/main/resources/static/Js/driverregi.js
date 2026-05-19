@@ -234,7 +234,7 @@ function driverRegi2(event){
                 msg.innerText = response;
                 msg.classList.remove("hidden");
             }else{
-                window.location.href = "/addvehicle";
+                window.location.href = "/profile";
             }
         }
     }

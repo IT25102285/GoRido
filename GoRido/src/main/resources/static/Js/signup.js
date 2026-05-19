@@ -208,7 +208,7 @@ function signup(event) {
                 error_msg.classList.remove("hidden");
             }else{
                 error_msg.classList.add("hidden");
-                window.location.href = "/driverregi";
+                window.location.href = "/signin";
             }
         }
     }

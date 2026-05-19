@@ -93,41 +93,6 @@ function loadBrands(typeId){
     request.send();
 }
 
-function loadPassengers(typeId){
-
-    var passengerSelect = document.getElementById("no_of_passengers");
-
-    passengerSelect.disabled = false;
-    passengerSelect.innerHTML = '<option disabled selected>Loading...</option>';
-
-    var request = new XMLHttpRequest();
-
-    request.onreadystatechange = function () {
-        if (request.readyState == 4 && request.status == 200) {
-
-            var data = request.responseText.split(",");
-
-            passengerSelect.innerHTML = '<option disabled selected>Select passengers</option>';
-
-            for (var i = 0; i < data.length; i++) {
-
-                if (data[i] === "") continue;
-
-                var parts = data[i].split(":");
-
-                var opt = document.createElement("option");
-                opt.value = parts[0];
-                opt.innerHTML = parts[1] + " Passengers";
-
-                passengerSelect.appendChild(opt);
-            }
-        }
-    };
-
-    request.open("GET", "/vehicle/loadPassengers?typeId=" + typeId, true);
-    request.send();
-}
-
 function vehicleRegi(event){
 
     event.preventDefault();
@@ -137,7 +102,6 @@ function vehicleRegi(event){
     var model = document.getElementById("model");
     var vehicle_type = document.getElementById("vehicle_type");
     var vehicle_brand = document.getElementById("vehicle_brand");
-    var passengers = document.getElementById("no_of_passengers");
     var colour = document.getElementById("colour");
     var vehicleImage = document.querySelector("#wrap-vehicle input");
     var bookImage = document.querySelector("#wrap-book input");
@@ -174,11 +138,6 @@ function vehicleRegi(event){
 
     vehicle_brand.addEventListener("input", function () {
         vehicle_brand.classList.remove("border-red-500");
-        msg.classList.add("hidden");
-    });
-
-    passengers.addEventListener("input", function () {
-        passengers.classList.remove("border-red-500");
         msg.classList.add("hidden");
     });
 
@@ -305,15 +264,6 @@ function vehicleRegi(event){
         return;
     }
 
-    var passengerValue = passengers.value;
-
-    if (passengerValue === "" || passengerValue === "Select passengers") {
-        msg.innerText = "Number of passengers is required";
-        msg.classList.remove("hidden");
-        passengers.classList.add("border-red-500");
-        return;
-    }
-
     var color = colour.value;
 
     if (color === "" || color === "Select color") {
@@ -334,7 +284,6 @@ function vehicleRegi(event){
     form.append("model", model.value);
     form.append("typeId", vehicle_type.value);
     form.append("brandId", vehicle_brand.value);
-    form.append("passengersID", passengers.value);
     form.append("colorId", colour.value);
     form.append("vehicleImage", vehicleImage.files[0]);
     form.append("bookImage", bookImage.files[0]);
@@ -349,7 +298,7 @@ function vehicleRegi(event){
                 msg.innerText = response;
                 msg.classList.remove("hidden");
             }else{
-                window.location.href = "/userprofile";
+                window.location.href = "/managevehicle";
             }
         }
     }

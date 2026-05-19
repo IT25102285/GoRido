@@ -1,0 +1,553 @@
+<!doctype html>
+
+<html lang="en" class="dark" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Manage Admins | GoRido</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+
+        tailwind.config = { darkMode: "class" };
+
+    </script>
+
+    <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap"
+            rel="stylesheet" />
+
+    <style>
+        h1,
+
+        h2,
+
+        h3,
+
+        h4,
+
+        .brand {
+
+          font-family: "Outfit", sans-serif;
+
+        }
+
+
+
+        .glass {
+
+          background: rgba(15, 23, 42, 0.72);
+
+          backdrop-filter: blur(18px);
+
+        }
+
+
+
+        .card-hover {
+
+          transition: 0.25s ease;
+
+        }
+
+
+
+        .card-hover:hover {
+
+          transform: tranzincY(-4px);
+
+        }
+
+    </style>
+
+</head>
+
+<body
+        class="min-h-screen bg-zinc-100 dark:bg-zinc-950 text-zinc-800 dark:text-white">
+
+<div class="min-h-screen flex">
+
+    <!-- Sidebar -->
+
+    <div th:replace="~{adminSidebar :: adminSidebar}"></div>
+
+    <!-- Main Area -->
+
+    <main class="flex-1 lg:ml-72">
+
+        <!-- Top Bar -->
+
+        <header
+                class="sticky top-0 z-40 bg-white/80 dark:bg-zinc-950/80 backdrop-blur border-b border-zinc-200 dark:border-zinc-800">
+
+            <div
+                    class="px-5 sm:px-8 py-4 flex items-center justify-between">
+
+                <div>
+
+                    <h2 class="text-xl sm:text-2xl font-bold">Manage Admins</h2>
+
+                    <p
+                            class="text-sm text-zinc-500 dark:text-zinc-400">
+                        Manage admins in GoRido
+                    </p>
+
+                </div>
+
+            </div>
+
+        </header>
+
+        <section class="p-5 sm:p-8 space-y-8">
+
+            <div
+                    class="flex items-center justify-between w-full flex-wrap gap-4">
+
+                <!-- Breadcrumbs (LEFT) -->
+                <nav
+                        class="text-xs text-zinc-400 dark:text-zinc-500 flex items-center flex-wrap">
+                    <a href="/userprofile"
+                       class="hover:text-yellow-400 transition">
+                        Home
+                    </a>
+
+                    <span class="mx-2">/</span>
+
+                    <span
+                            class="text-zinc-300 dark:text-zinc-200 font-medium">
+                                Manage Admins
+                            </span>
+                </nav>
+
+                <!-- Add Admin Button (RIGHT) -->
+                <button onclick="openModalUpdate()"
+                        class="w-10 h-10 rounded-full bg-yellow-400 hover:bg-yellow-300
+          flex items-center justify-center transition-all duration-300
+          shadow-md hover:scale-105 text-zinc-900">
+
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="w-5 h-5"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M12 4v16m8-8H4" />
+                    </svg>
+
+                </button>
+
+            </div>
+
+            <!-- Recent Rides -->
+
+            <div
+                    class="bg-white dark:bg-zinc-900 rounded-3xl p-6 shadow-lg border border-zinc-200 dark:border-zinc-950 space-y-6">
+
+                <div class="space-y-4">
+
+                    <!-- ADMIN CARD -->
+                    <div  th:each="admin : ${admins}" class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5 hover:border-yellow-400/30 transition duration-300">
+
+                        <div
+                                class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-6">
+
+                            <!-- LEFT -->
+                            <div
+                                    class="flex items-center gap-4 min-w-0">
+
+                                <!-- Avatar -->
+                                <div class="w-14 h-14 rounded-2xl bg-yellow-400/10 flex items-center justify-center text-yellow-400 font-bold text-lg flex-shrink-0">
+
+    <span th:text="${#strings.substring(admin.firstName,0,1) + #strings.substring(admin.lastName,0,1)}">
+        AD
+    </span>
+
+                                </div>
+
+                                <!-- Info -->
+                                <div class="min-w-0">
+
+                                    <div
+                                            class="flex flex-wrap items-center gap-2">
+
+                                        <h3 class="text-white font-semibold text-lg truncate" th:text="${admin.firstName + ' ' + admin.lastName}">
+                                        </h3>
+
+                                        <span
+                                                class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-emerald-400/10 text-emerald-400 border border-emerald-400/20">
+                                                    Admin
+                                                </span>
+
+                                    </div>
+
+                                    <p
+                                            class="text-sm text-zinc-500 mt-1 truncate" th:text="${admin.email}">
+                                    </p>
+
+                                    <!-- Details -->
+                                    <div
+                                            class="flex flex-wrap items-center gap-5 mt-4">
+
+                                        <!-- Joined -->
+                                        <div
+                                                class="flex items-center gap-2 text-sm text-zinc-400">
+
+                                            <svg
+                                                    class="w-4 h-4 text-zinc-500"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                <path
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M8 7V3m8 4V3m-9 8h10m-11 9h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v11a2 2 0 002 2z" />
+                                            </svg>
+
+                                            <span th:text="${#dates.format(admin.registeredDate, 'dd MMM yyyy | hh:mm a')}"></span>
+
+                                        </div>
+
+                                        <!-- Status -->
+                                        <div class="flex items-center gap-2 text-sm"
+                                             th:classappend="${admin.status.id == 1} ? 'text-emerald-400' : 'text-red-400'">
+
+                                            <span class="w-2 h-2 rounded-full"th:classappend="${admin.status.id == 1} ? 'bg-emerald-400' : 'bg-red-400'"></span>
+
+                                            <span th:text="${admin.status.id == 1} ? 'Active' : 'Deactive'"></span>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <!-- RIGHT BUTTONS -->
+                            <div class="flex items-center gap-3">
+
+                                <button th:if="${admin.status.id == 1}"
+                                        th:attr="data-email=${admin.email}"
+                                        onclick="changeStatus(this)"
+                                        class="flex items-center gap-2 px-5 py-2.5 rounded-xl
+               bg-red-400 text-white text-sm font-semibold
+               shadow-lg shadow-red-400/10">
+                                    Deactivate
+                                </button>
+
+                                <button th:if="${admin.status.id == 2}"
+                                        th:attr="data-email=${admin.email}"
+                                        onclick="changeStatus(this)"
+                                        class="flex items-center gap-2 px-5 py-2.5 rounded-xl
+               bg-emerald-400 text-zinc-900 text-sm font-semibold
+               shadow-lg shadow-emerald-400/10">
+                                    Activate
+                                </button>
+
+                                <!-- Edit -->
+                                <button th:attr="data-first=${admin.firstName}, data-last=${admin.lastName}, data-email=${admin.email}, data-password=${admin.password}" onclick="openAdminModal(this)"
+                                        class="w-11 h-11 rounded-xl bg-yellow-400/10 border border-yellow-400/20
+               text-yellow-400 hover:bg-yellow-400 hover:text-zinc-900
+               flex items-center justify-center transition duration-200">
+
+                                    <svg class="w-4 h-4"
+                                         fill="none"
+                                         stroke="currentColor"
+                                         viewBox="0 0 24 24">
+                                        <path stroke-linecap="round"
+                                              stroke-linejoin="round"
+                                              stroke-width="2"
+                                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L12 15l-4 1 1-4 8.586-8.586z" />
+                                    </svg>
+
+                                </button>
+
+                                <!-- Delete -->
+                                <button th:attr="data-email=${admin.email}"
+                                onclick="deleteAdmin(this)"
+                                        class="w-11 h-11 rounded-xl bg-red-400/10 border border-red-400/20
+               text-red-400 hover:bg-red-400 hover:text-white
+               flex items-center justify-center transition duration-200">
+
+                                    <svg class="w-4 h-4"
+                                         fill="none"
+                                         stroke="currentColor"
+                                         viewBox="0 0 24 24">
+                                        <path stroke-linecap="round"
+                                              stroke-linejoin="round"
+                                              stroke-width="2"
+                                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3m-7 0h8" />
+                                    </svg>
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<div id="admin-modal"
+     class="hidden fixed inset-0 z-50 flex items-center justify-center px-4">
+
+    <!-- Overlay -->
+    <div id="admin-overlay"
+         class="absolute inset-0 bg-black/70 backdrop-blur-md"
+         onclick="closeAdminModal()">
+    </div>
+
+    <!-- Modal Box -->
+    <div id="admin-box"
+         class="relative w-full max-w-md rounded-3xl
+                bg-zinc-900 border border-zinc-700
+                shadow-2xl p-8
+                opacity-0 scale-95 transition-all duration-300">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+
+            <div>
+                <h2 class="text-2xl font-bold text-white">
+                    Admin Access
+                </h2>
+                <p class="text-sm text-zinc-400 mt-1">
+                    Update admin credentials
+                </p>
+            </div>
+
+            <button onclick="closeAdminModal()"
+                    class="w-9 h-9 rounded-full flex items-center justify-center
+                           text-zinc-400 hover:text-red-400
+                           hover:bg-red-500/10 transition">
+                ✕
+            </button>
+
+        </div>
+
+        <!-- Form -->
+        <form class="space-y-5">
+            <!-- First Name -->
+            <div>
+                <label class="text-sm text-zinc-300">First Name</label>
+                <input id="newFname" type="text"
+                       class="w-full mt-2 px-4 py-3 rounded-2xl
+                              bg-zinc-800 border border-zinc-700
+                              text-white placeholder:text-zinc-500
+                              focus:outline-none focus:ring-2
+                              focus:ring-yellow-400">
+            </div>
+
+            <!-- First Name -->
+            <div>
+                <label class="text-sm text-zinc-300">Last Name</label>
+                <input id="newLname" type="text"
+                       class="w-full mt-2 px-4 py-3 rounded-2xl
+                              bg-zinc-800 border border-zinc-700
+                              text-white placeholder:text-zinc-500
+                              focus:outline-none focus:ring-2
+                              focus:ring-yellow-400">
+            </div>
+
+            <!-- Email -->
+            <div>
+                <label class="text-sm text-zinc-300">Email</label>
+                <input id="newEmail" type="email"
+                       placeholder="Enter admin email"
+                       class="w-full mt-2 px-4 py-3 rounded-2xl
+                              bg-zinc-800 border border-zinc-700
+                              text-white placeholder:text-zinc-500
+                              focus:outline-none focus:ring-2
+                              focus:ring-yellow-400">
+            </div>
+
+            <input type="text" class="hidden" id="oldEmail">
+
+            <!-- Password -->
+            <div>
+                <label class="text-sm text-zinc-300">Password</label>
+                <input id="newPassword" type="password"
+                       placeholder="Enter new password"
+                       class="w-full mt-2 px-4 py-3 rounded-2xl
+                              bg-zinc-800 border border-zinc-700
+                              text-white placeholder:text-zinc-500
+                              focus:outline-none focus:ring-2
+                              focus:ring-yellow-400">
+            </div>
+
+            <p id="modelmsg"
+               class="text-sm text-center hidden mt-3 text-red-600"></p>
+
+            <!-- Buttons -->
+            <div class="flex gap-3 pt-4">
+
+                <button type="button"
+                        onclick="closeAdminModal()"
+                        class="w-1/3 py-2 text-sm font-bold text-red-500
+                               hover:text-red-500 hover:underline transition">
+                    Cancel
+                </button>
+
+                <button type="button"
+                        onclick="updateAdmin()"
+                        class="w-2/3 py-3 rounded-2xl
+                               bg-gradient-to-r from-yellow-400 to-amber-300
+                               text-zinc-900 font-bold
+                               hover:scale-[1.02] transition">
+                    Save
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<!-- update user Modal -->
+<div id="new-admin-model"
+     class="hidden fixed inset-0 z-50 flex items-center justify-center">
+
+    <!-- Bg Blur -->
+    <div id="modal-overlay1"
+         class="absolute inset-0 bg-black/60 backdrop-blur-sm">
+    </div>
+
+    <!-- MODAL -->
+    <div id="new-admin-box"
+         class="relative w-full max-w-md rounded-3xl
+                bg-zinc-900 border border-zinc-700
+                shadow-2xl p-8
+                opacity-0 scale-95 transition-all duration-300">
+
+        <div class="flex items-center justify-between mb-6">
+
+            <div>
+                <h3
+                        class="text-2xl font-bold text-zinc-800 dark:text-white">
+                    Add Admin
+                </h3>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400">
+                    Create new admin account
+                </p>
+            </div>
+
+            <button onclick="closeModalUpdate()"
+                    class="w-9 h-9 flex items-center justify-center rounded-full
+                           hover:bg-red-100 dark:hover:bg-red-500/20
+                           text-zinc-500 hover:text-red-500 transition">
+                ✕
+            </button>
+        </div>
+
+        <form class="space-y-4">
+            <!-- First Name -->
+            <div>
+                <label
+                        class="text-sm text-zinc-600 dark:text-zinc-300">
+                    First name
+                </label>
+                <input type="text"
+                       id="fname"
+                       class="w-full mt-2 px-4 py-3 rounded-2xl
+                              bg-zinc-800 border border-zinc-700
+                              text-white placeholder:text-zinc-500
+                              focus:outline-none focus:ring-2
+                              focus:ring-yellow-400"
+                       placeholder="Enter first name">
+            </div>
+
+            <!-- Last Name -->
+            <div>
+                <label
+                        class="text-sm text-zinc-600 dark:text-zinc-300">
+                    Last name
+                </label>
+                <input type="text"
+                       id="lname"
+                       class="w-full mt-2 px-4 py-3 rounded-2xl
+                              bg-zinc-800 border border-zinc-700
+                              text-white placeholder:text-zinc-500
+                              focus:outline-none focus:ring-2
+                              focus:ring-yellow-400"
+                       placeholder="Enter last name">
+            </div>
+
+            <!-- Email -->
+            <div>
+                <label
+                        class="text-sm text-zinc-600 dark:text-zinc-300">
+                    Email
+                </label>
+                <input type="text" id="email"
+                       class="w-full mt-2 px-4 py-3 rounded-2xl
+                              bg-zinc-800 border border-zinc-700
+                              text-white placeholder:text-zinc-500
+                              focus:outline-none focus:ring-2
+                              focus:ring-yellow-400"
+                       placeholder="Enter email">
+            </div>
+
+            <!-- Mobile -->
+            <div>
+                <label
+                        class="text-sm text-zinc-600 dark:text-zinc-300">
+                    Password
+                </label>
+                <input type="password"
+                       id="password"
+                       class="w-full mt-2 px-4 py-3 rounded-2xl
+                              bg-zinc-800 border border-zinc-700
+                              text-white placeholder:text-zinc-500
+                              focus:outline-none focus:ring-2
+                              focus:ring-yellow-400"
+                       placeholder="Enter password">
+            </div>
+
+            <p id="modelmsg2"
+               class="text-sm text-center hidden mt-3 text-red-600"></p>
+
+            <div class="flex gap-3 pt-4">
+
+                <button type="button"
+                        onclick="closeModalUpdate()"
+                        class="w-1/3 py-2 text-sm font-bold text-red-500
+                               hover:text-red-500 hover:underline transition">
+                    Cancel
+                </button>
+
+                <button type="button"
+                        onclick="addAdmin()"
+                        class="w-2/3 py-3 font-semibold text-black
+                               bg-gradient-to-r from-yellow-400 to-yellow-300
+                               rounded-xl shadow-md">
+                    Add Admin
+                </button>
+
+            </div>
+
+        </form>
+    </div>
+</div>
+<script src="/Js/manageAdmin.js"></script>
+<script src="/Js/default.js"></script>
+</body>
+
+</html>

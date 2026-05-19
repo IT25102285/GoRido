@@ -1,0 +1,275 @@
+<!doctype html>
+
+<html lang="en" class="dark" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Payment History | GoRido</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+
+    tailwind.config = { darkMode: "class" };
+
+  </script>
+
+  <link
+          href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap"
+          rel="stylesheet" />
+
+  <style>
+    h1,
+
+    h2,
+
+    h3,
+
+    h4,
+
+    .brand {
+
+      font-family: "Outfit", sans-serif;
+
+    }
+
+
+
+    .glass {
+
+      background: rgba(15, 23, 42, 0.72);
+
+      backdrop-filter: blur(18px);
+
+    }
+
+
+
+    .card-hover {
+
+      transition: 0.25s ease;
+
+    }
+
+
+
+    .card-hover:hover {
+
+      transform: tranzincY(-4px);
+
+    }
+
+  </style>
+
+</head>
+
+<body
+        class="min-h-screen bg-zinc-100 dark:bg-zinc-950 text-zinc-800 dark:text-white">
+
+<div class="min-h-screen flex">
+
+  <!-- Sidebar -->
+
+  <div th:replace="~{sidebar :: sidebar}"></div>
+
+  <!-- Main Area -->
+
+  <main class="flex-1 lg:ml-72">
+
+    <!-- Top Bar -->
+
+    <header
+            class="sticky top-0 z-40 bg-white/80 dark:bg-zinc-950/80 backdrop-blur border-b border-zinc-200 dark:border-zinc-800">
+
+      <div
+              class="px-5 sm:px-8 py-4 flex items-center justify-between">
+
+        <div>
+
+          <h2 class="text-xl sm:text-2xl font-bold">Payment History</h2>
+
+          <p
+                  class="text-sm text-zinc-500 dark:text-zinc-400">
+            Manage payment in GoRido
+          </p>
+
+        </div>
+
+      </div>
+
+    </header>
+
+    <section class="p-5 sm:p-8 space-y-8">
+
+      <div
+              class="flex items-center justify-between w-full flex-wrap gap-4">
+
+        <!-- Breadcrumbs (LEFT) -->
+        <nav
+                class="text-xs text-zinc-400 dark:text-zinc-500 flex items-center flex-wrap">
+          <a href="/userprofile"
+             class="hover:text-yellow-400 transition">
+            Home
+          </a>
+
+          <span class="mx-2">/</span>
+
+          <span class="text-zinc-300 dark:text-zinc-200 font-medium">Payment history
+          </span>
+        </nav>
+
+      </div>
+
+      <!-- Recent Rides -->
+
+      <div
+              class="bg-white dark:bg-zinc-900 rounded-3xl p-6 shadow-lg border border-zinc-200 dark:border-zinc-950 space-y-6">
+
+        <div class="space-y-4">
+
+          <!-- ================= DESKTOP TABLE ================= -->
+          <div class="hidden md:block overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+
+            <table class="w-full text-sm bg-white dark:bg-zinc-900">
+
+              <thead class="bg-zinc-100 dark:bg-zinc-800 text-xs uppercase text-zinc-500">
+              <tr>
+                <th class="px-5 py-4 text-left">Invoice</th>
+                <th class="px-5 py-4 text-left">Hire</th>
+                <th class="px-5 py-4 text-left">Pickup</th>
+                <th class="px-5 py-4 text-left">Drop</th>
+                <th class="px-5 py-4 text-left">Transaction</th>
+                <th class="px-5 py-4 text-right">Fare</th>
+                <th class="px-5 py-4 text-right">Date</th>
+                <th class="px-5 py-4 text-center">Status</th>
+              </tr>
+              </thead>
+
+              <tbody class="divide-y divide-zinc-200 dark:divide-zinc-800">
+
+              <tr th:each="h : ${hires}"
+                  class="hover:bg-zinc-50 dark:hover:bg-zinc-800 transition">
+
+                <td class="px-5 py-4 font-semibold text-zinc-800 dark:text-white">
+                  INV-<span th:text="${h.payment.id}"></span>
+                </td>
+
+                <td class="px-5 py-4 text-zinc-600 dark:text-zinc-300">
+                  HIRE-<span th:text="${h.id}"></span>
+                </td>
+
+                <td class="px-5 py-4 max-w-[160px] truncate text-zinc-600 dark:text-zinc-300"
+                    th:text="${h.pickup_location}">
+                </td>
+
+                <td class="px-5 py-4 max-w-[160px] truncate text-zinc-600 dark:text-zinc-300"
+                    th:text="${h.drop_location}">
+                </td>
+
+                <td class="px-5 py-4 text-zinc-500"
+                    th:text="${h.payment.transactionId != null ? h.payment.transactionId : '-'}">
+                </td>
+
+                <td class="px-5 py-4 text-right font-bold text-green-600">
+                  Rs. <span th:text="${h.total_fare}"></span>
+                </td>
+
+                <td class="px-5 py-4 text-right text-zinc-500"
+                    th:text="${#dates.format(h.payment.paidAt, 'yyyy-MM-dd')}">
+                </td>
+
+                <td class="px-5 py-4 text-center">
+            <span class="px-3 py-1 text-xs rounded-full
+                         bg-green-100 text-green-600
+                         dark:bg-green-900 dark:text-green-300"
+                  th:text="${h.payment.paymentStatus.name}">
+            </span>
+                </td>
+
+              </tr>
+
+              </tbody>
+
+            </table>
+          </div>
+
+
+          <!-- MOBILE CARDS -->
+          <div class="md:hidden space-y-3">
+
+            <div th:each="h : ${hires}"
+                 class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800
+                rounded-2xl p-4 shadow-sm">
+
+              <!-- Top -->
+              <div class="flex justify-between items-center mb-2">
+
+                <div class="font-semibold text-zinc-800 dark:text-white">
+                  INV-<span th:text="${h.payment.id}"></span>
+                </div>
+
+                <span class="text-xs px-3 py-1 rounded-full
+                     bg-green-100 text-green-600
+                     dark:bg-green-900 dark:text-green-300"
+                      th:text="${h.payment.paymentStatus.name}">
+        </span>
+
+              </div>
+
+              <!-- Body -->
+              <div class="text-sm text-zinc-600 dark:text-zinc-300 space-y-1">
+
+                <p>
+                  <span class="text-zinc-400">Hire:</span>
+                  HIRE-<span th:text="${h.id}"></span>
+                </p>
+
+                <p>
+                  <span class="text-zinc-400">Route:</span>
+                  <span th:text="${h.pickup_location}"></span>
+                  →
+                  <span th:text="${h.drop_location}"></span>
+                </p>
+
+                <p>
+                  <span class="text-zinc-400">Txn:</span>
+                  <span th:text="${h.payment.transactionId}"></span>
+                </p>
+
+                <!-- Bottom -->
+                <div class="flex justify-between mt-3 pt-3 border-t border-zinc-200 dark:border-zinc-800">
+
+          <span class="text-green-600 font-bold">
+            Rs. <span th:text="${h.total_fare}"></span>
+          </span>
+
+                  <span class="text-xs text-zinc-400"
+                        th:text="${#dates.format(h.payment.paidAt, 'yyyy-MM-dd')}">
+          </span>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+<script src="/Js/paymentHistory.js"></script>
+<script src="/Js/default.js"></script>
+</body>
+
+</html>
