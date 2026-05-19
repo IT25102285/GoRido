@@ -6,6 +6,7 @@ import com.example.gorido.Repository.*;
 import com.example.gorido.Service.VehicleService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,14 +25,11 @@ public class VehicleServiceImpl implements VehicleService {
     private final UserRepository userRepository;
     private final DriverRepository driverRepository;
     private final StatusRepository statusRepository;
-    private final PassengerRepository passengerRepository;
-    private final TypeHasPassengerRepository typeHasPassengerRepository;
 
     public VehicleServiceImpl(VehicleTypeRepository vehicleTypeRepository,
                               VehicleColorRepository vehicleColorRepository, VehicleBrandRepository vehicleBrandRepository,
                               TypeHasBrandRepository typeHasBrandRepository, VehicleRepository vehicleRepository, UserRepository userRepository,
-                              DriverRepository driverRepository, StatusRepository statusRepository, TypeHasPassengerRepository typeHasPassengerRepository,
-                              PassengerRepository passengerRepository){
+                              DriverRepository driverRepository, StatusRepository statusRepository){
         this.vehicleBrandRepository = vehicleBrandRepository;
         this.vehicleColorRepository = vehicleColorRepository;
         this.vehicleTypeRepository = vehicleTypeRepository;
@@ -40,8 +38,6 @@ public class VehicleServiceImpl implements VehicleService {
         this.userRepository = userRepository;
         this.driverRepository = driverRepository;
         this.statusRepository = statusRepository;
-        this.typeHasPassengerRepository = typeHasPassengerRepository;
-        this.passengerRepository = passengerRepository;
     }
 
     public String loadOptions(){
@@ -75,22 +71,6 @@ public class VehicleServiceImpl implements VehicleService {
         }
 
         return brandStr.toString();
-    }
-
-    public String loadPassengers(int typeId) {
-
-        List<Passengers> list = passengerRepository.findPassengersByTypeId(typeId);
-
-        StringBuilder sb = new StringBuilder();
-
-        for (Passengers p : list) {
-            sb.append(p.getId())
-                    .append(":")
-                    .append(p.getNumber())
-                    .append(",");
-        }
-
-        return sb.toString();
     }
 
     public String addVehicle(VehicleRegisterRequest request, HttpSession session){
@@ -155,24 +135,7 @@ public class VehicleServiceImpl implements VehicleService {
         }
         typeHasBrand = existing.get();
 
-        Passengers passenger = passengerRepository.findById(request.getPassengersID()).orElse(null);
-
-        if (passenger == null) {
-            return "error: Passenger not found";
-        }
-
-        Optional<TypeHasPassenger> existingPassenger = typeHasPassengerRepository.findByVehicleTypeAndPassengersId(type, passenger);
-
-        TypeHasPassenger typeHasPassenger;
-
-        if (existingPassenger.isEmpty()) {
-            return "Database Error, Try Again Later";
-        }
-
-        typeHasPassenger = existingPassenger.get();
-
-        vehicle.setVehicleTypeHasBrand(typeHasBrand);
-        vehicle.setTypeHasPassenger(typeHasPassenger);
+        vehicle.setTypeHasBrand(typeHasBrand);
         VehicleColor color = vehicleColorRepository.findById(request.getColor()).orElse(null);
         if (color == null){
             return "error: Color not found";
@@ -230,6 +193,136 @@ public class VehicleServiceImpl implements VehicleService {
         file.transferTo(saveFile);
 
         return fileName;
+    }
+
+    public String manageVehicle(Model model, HttpSession session){
+        String email = (String) session.getAttribute("userEmail");
+
+        if (email == null) {
+            return "redirect:/signin";
+        }
+
+        User user = userRepository.findByEmail(email).orElse(null);
+
+        if (user == null) {
+            return "redirect:/signin";
+        }
+
+        Driver driver = driverRepository.findByUserId(user).orElse(null);
+        if (driver == null){
+            return "redirect:/driverregi";
+        }
+
+        List<Vehicle> vehicles = vehicleRepository.findByDriverId(driver);
+        model.addAttribute("vehicles", vehicles);
+
+        return "managevehicle";
+    }
+
+    public String delete(HttpSession session, String number){
+
+        String email = (String) session.getAttribute("userEmail");
+        if (email == null) return "Session expired";
+
+        User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) return "User not found";
+
+        Driver driver = user.getDriver();
+        if (driver == null) return "Driver not found";
+
+        Vehicle matchedVehicle = null;
+        List<Vehicle> vehicleList = driver.getVehicles();
+
+        if (vehicleList.size() <= 1) {
+            Optional<Status> deactiveStatus = statusRepository.findById(2);
+
+            if (deactiveStatus.isEmpty()) {
+                return "error: Status not found";
+            }
+
+            driver.setStatusId(deactiveStatus.get());
+            driverRepository.save(driver);
+        }
+
+        for (Vehicle v : vehicleList) {
+            if (number.equals(v.getNumber())) {
+                matchedVehicle = v;
+                break;
+            }
+        }
+
+        if (matchedVehicle == null) {
+            return "Vehicle not found";
+        }
+
+        driver.getVehicles().remove(matchedVehicle);
+        matchedVehicle.setDriverId(null);
+
+        deleteFile(matchedVehicle.getInsurance_photo(), "driver/vehicle/isuarance");
+        deleteFile(matchedVehicle.getVehicle_book(), "driver/vehicle/book");
+        deleteFile(matchedVehicle.getVehicle_photo(), "driver/vehicle/vehicle_images");
+
+        vehicleRepository.delete(matchedVehicle);
+
+        return "success";
+    }
+
+    private void deleteFile(String fileName, String folder) {
+
+        if (fileName == null) return;
+
+        String basePath = "J:/New folder/GoRido/images/";
+
+        File file = new File(basePath + folder + "/" + fileName);
+
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
+    public String changeStatus(HttpSession session, String number){
+
+        String email = (String) session.getAttribute("userEmail");
+        if (email == null) return "Session expired";
+
+        User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) return "User not found";
+
+        Driver driver = user.getDriver();
+        if (driver == null) return "Driver not found";
+
+        Vehicle matchedVehicle = null;
+        List<Vehicle> vehicleList = driver.getVehicles();
+
+        for (Vehicle v : vehicleList) {
+            if (number.equals(v.getNumber())) {
+                matchedVehicle = v;
+                break;
+            }
+        }
+
+        if (matchedVehicle == null) {
+            return "Vehicle not found";
+        }
+
+        Optional<Status> activeStatus = statusRepository.findById(1);
+        Optional<Status> deactiveStatus = statusRepository.findById(2);
+
+        if (activeStatus.isEmpty() || deactiveStatus.isEmpty()) {
+            return "error: Status not found";
+        }
+
+        int status = matchedVehicle.getStatusId().getId();
+
+        if (status == 1){
+            matchedVehicle.setStatusId(deactiveStatus.get());
+        } else if (status == 2){
+            matchedVehicle.setStatusId(activeStatus.get());
+        }
+
+        vehicleRepository.save(matchedVehicle);
+
+        return "success";
     }
 
 }

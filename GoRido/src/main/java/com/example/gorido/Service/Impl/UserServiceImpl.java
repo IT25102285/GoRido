@@ -3,6 +3,7 @@ package com.example.gorido.Service.Impl;
 import com.example.gorido.Model.User;
 import com.example.gorido.Model.*;
 import com.example.gorido.Repository.*;
+import com.example.gorido.Service.AuthService;
 import com.example.gorido.Service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
@@ -16,26 +17,24 @@ import java.util.Optional;
 import java.util.Random;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, AuthService {
     private final UserRepository userRepository;
     private final StatusRepository statusRepository;
     private final TypeRepository typeRepository;
     private final GenderRepository genderRepository;
-    private final EmailService emailService;
-    private final DriverRepository driverRepository;
-    private final VehicleRepository vehicleRepository;
+    private final EmailService emailService;;
+    private final HireRepository hireRepository;
 
     public UserServiceImpl(UserRepository userRepository,
                            StatusRepository statusRepository,
                            TypeRepository typeRepository,
-                           GenderRepository genderRepository, EmailService emailService, DriverRepository driverRepository, VehicleRepository vehicleRepository) {
+                           GenderRepository genderRepository, EmailService emailService, HireRepository hireRepository) {
         this.userRepository = userRepository;
         this.statusRepository = statusRepository;
         this.typeRepository = typeRepository;
         this.genderRepository = genderRepository;
         this.emailService = emailService;
-        this.driverRepository = driverRepository;
-        this.vehicleRepository = vehicleRepository;
+        this.hireRepository = hireRepository;
     }
 
     public String getAllGenders() {
@@ -182,21 +181,31 @@ public class UserServiceImpl implements UserService {
         String email = (String) session.getAttribute("userEmail");
 
         if (email == null) {
-            return "redirect:/login";
+            return "redirect:/signin";
         }
 
         User user = userRepository.findByEmail(email).orElse(null);
 
         if (user == null) {
-            return "redirect:/login";
+            return "redirect:/signin";
         }
 
-        model.addAttribute("user", user);
+        if (user.getDriver() != null) {
+            return "redirect:/driverprofile";
+        }
+
+        List<Hire> latestHires = hireRepository.findTop3ByUserId(user.getId())
+                .stream()
+                .limit(3)
+                .toList();
+
+        model.addAttribute("activePage", "profile");
+        model.addAttribute("latestHires", latestHires);
 
         return "userprofile";
     }
 
-    public String saveNewPassword(String email, String oldPassword, String newPassword){
+    public String changePassword(String email, String oldPassword, String newPassword){
         User user = userRepository.findByEmail(email).orElse(null);
 
         if (user == null) return "User not found";
